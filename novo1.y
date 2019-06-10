@@ -3,11 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+void init();
+
+int yylex();
 void yyerror(char *);
-char **reserved_words;
-void check_id(char **);
-char *str_read(FILE *);
-int hash(char *);
 %}
 
 /* Tipos que o analisador léxico pode retornar */
@@ -28,92 +27,107 @@ int hash(char *);
 %token <id> identifier;
 
 /* Tokens reservados */
-%token end
-%token read
-%token write
-%token for
-%token to
+%token END
+%token READ
+%token WRITE
+%token FOR
+%token TO
 %token begin
-%token const
-%token do
-%token else
-%token if
-%token procedure
-%token program
-%token then
-%token var
-%token while
-%token integer
-%token real
+%token CONST // TA DANDO A PORRA DO PROBLEMA
+%token DO
+%token ELSE
+%token IF
+%token PROCEDURE
+%token PROGRAM
+%token THEN
+%token VAR
+%token WHILE
+%token INTEGER
+%token REAL
 
+/* Definicoes adicionais */
+//%left '+' '-'
+//%left '*' '/'
+//%nonassoc UMINUS
+//%nonassoc if
+//%nonassoc else
 %%
 
-programa    : program identifier ';' corpo '.'
+programa    : PROGRAM identifier ';' corpo '.'
             ;
 
-corpo   : dc begin comandos end
+corpo   : dc begin comandos END
         ;
 
 dc      : dc_c dc_v dc_p
         ;
 
-dc_c    : const identifier '=' numero ';' dc_c
+dc_c    : CONST identifier '=' numero ';' dc_c
+        | /* EMPTY */        
         ;
 
-dc_v    : var variaveis ':' tipo_var ';' dc_v
+dc_v    : VAR variaveis ':' tipo_var ';' dc_v
+        | /* EMPTY */ 
         ;
 
-tipo_var    : real 
-            | integer
+tipo_var    : REAL 
+            | INTEGER
             ;
 
 variaveis   : identifier mais_var
             ;
 
-mais_var    : ',' variaveis   
+mais_var    : ',' variaveis  
+            | /* EMPTY */  
             ; 
 
-dc_p    : procedure identifier parametros ';' corpo_p dc_p
+dc_p    : PROCEDURE identifier parametros ';' corpo_p dc_p
+        | /* EMPTY */ 
         ;
 
 parametros      : '(' lista_par ')'
+                | /* EMPTY */ 
                 ;
 
 lista_par   : variaveis ':' tipo_var mais_par
             ;
 
 mais_par    : ';' lista_par 
+            | /* EMPTY */ 
             ;
 
-corpo_p     : dc_loc begin comandos end ';'
+corpo_p     : dc_loc begin comandos END ';'
             ;
 
 dc_loc      : dc_v
             ;
 
-lista_arg   : '(' argumentos ')' 
+lista_arg   : '(' argumentos ')'
+            | /* EMPTY */  
             ;
 
 argumentos      : identifier mais_ident
                 ;
 
 mais_ident      : ';' argumentos
+                | /* EMPTY */ 
                 ;
 
-pfalsa      : else cmd
+pfalsa      : ELSE cmd
+            | /* EMPTY */ 
             ;
 
 comandos    : cmd ';' comandos 
+            | /* EMPTY */ 
             ;
 
-
-cmd     : read '(' variaveis ')' 
-        | write '(' variaveis ')' 
-        | while '(' condicao ')' do cmd
-        | if condicao then cmd pfalsa
+cmd     : READ '(' variaveis ')' 
+        | WRITE '(' variaveis ')' 
+        | WHILE '(' condicao ')' DO cmd
+        | IF condicao THEN cmd pfalsa
         | identifier ":=" expressao
         | identifier lista_arg 
-        | begin comandos end
+        | begin comandos END
         ;
 
 condicao    : expressao relacao expressao
@@ -132,9 +146,11 @@ expressao   : termo outros_termos
 
 op_un   : '+' 
         | '-' 
+        | /* EMPTY */ 
         ;
 
 outros_termos   : op_ad termo outros_termos 
+                | /* EMPTY */ 
                 ;
 
 op_ad   : '+'
@@ -145,6 +161,7 @@ termo   : op_un fator mais_fatores
         ;
 
 mais_fatores    : op_mul fator mais_fatores 
+                | /* EMPTY */ 
                 ;
 
 op_mul      : "*" 
@@ -163,12 +180,18 @@ numero      : ninteger
 %%
 void yyerror (char *s) 
 {
-    fprintf(stderr, "\nERROR, LINE %d: %s\n", yylineno, s); 
+    //fprintf(stderr, "\nERROR, LINE %d: %s\n", yylineno, s); 
+    fprintf(stderr, "\n%s\n", s); 
 } 
 
 int main (void) 
 {
+    init();
+    
     yyparse();
+
+    //free(reserved_words);
+    //fclose(fp);
+
+    return 0;
 }
-
-
