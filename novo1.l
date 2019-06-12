@@ -39,11 +39,20 @@ nreal                                   {digit}+\.{digit}+
 /* Regras*/
 %%
 
+	int contador_comment = 0;
+
     /* Start condition que emprega em comentarios apenas as regras especificadas abaixo */
 "{"                                     BEGIN(COMMENT);
-<COMMENT>[^}\n]+                        /* não faz nada */
+<COMMENT>"{"							{++contador_comment;}
+<COMMENT>[^}{\n]+                        /* não faz nada */
 <COMMENT>\n                             fprintf(stderr, "Erro encontrado - Comentario nao fechado");nlinha += 1;BEGIN(INITIAL);
-<COMMENT>"}"                            BEGIN(INITIAL);
+<COMMENT>"}"                            {
+                                            if(contador_comment)
+                                               --contador_comment; 
+                                            else
+                                                BEGIN(INITIAL);
+                                        }
+
 
     /* Par regex/ação */
 {ninteger}                              {
@@ -82,6 +91,12 @@ nreal                                   {digit}+\.{digit}+
 {alpha}@|({alpha}|{digit})+             {yyerror("Erro lexico encontrado - Identificador mal formado");}
 
 {digit}+\.{alpha}+{digit}*              {yyerror("Erro lexico encontrado - Numero mal formado");}
+
+{digit}+\.{digit}*{alpha}*              {yyerror("Erro lexico encontrado - Numero mal formado");}
+
+{digit}+\.{digit}*@{alpha}*             {yyerror("Erro lexico encontrado - Numero mal formado");}
+
+{digit}+\.{digit}*\.{digit}*            {yyerror("Erro lexico encontrado - Numero mal formado");}
 
 .                                       {yyerror("Erro encontrado - Simbolo nao pertencente a linguagem");}
 
