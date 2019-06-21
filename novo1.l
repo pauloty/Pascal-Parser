@@ -57,13 +57,13 @@ nreal                                   {digit}+\.{digit}+
     /* Par regex/ação */
 {ninteger}                              {
                                             //fprintf( stderr, " [ninteger:%d]", yylval.ival = atoi(yytext) ); 
-                                            printf(" [ninteger:%d]", yylval.ival = atoi(yytext) );
+                                            printf(" [ninteger : %d]", yylval.ival = atoi(yytext) );
 					                        return ninteger;
                                         } 
 
 {nreal}                                 {
                                             //fprintf( stderr, " [nreal:%d]", yylval.fval = atoi(yytext) ); 
-                                            printf(" [nreal:%f]", yylval.fval = atoi(yytext) ); 
+                                            printf(" [nreal : %f]", yylval.fval = atoi(yytext) ); 
 					                        return nreal;
                                         } 
 
@@ -74,13 +74,13 @@ nreal                                   {digit}+\.{digit}+
 
 (=|:=|<=|>=|<>|>|<)                     {
                                             //fprintf( stderr, " [%s:%s]",yytext, yytext); 
-                                            printf(" [%s:%s]",yytext, yytext); 
+                                            printf(" [%s : %s]",yytext, yytext); 
 					                        return *yytext;
                                         }
 
 [*/+\-,^.;:()\[\]]                      {
                                             //fprintf( stderr, " [%s:%s]",yytext, yytext); 
-                                            printf(" [%s:%s]",yytext, yytext); 
+                                            printf(" [%s : %s]",yytext, yytext); 
 					                        return yytext[0];
                                         }
 
@@ -143,48 +143,48 @@ int check_id(char **reserved_words)
     int pos = hash(yytext);
 
     if (reserved_words[pos] != NULL && !strcmp(reserved_words[pos], yytext)){
-        printf("%s - %s\n", yytext, yytext);
+        printf(" [%s - %s]", yytext, yytext);
         
-        if(strcmp(yytext, "end"))
+        if(strcmp(yytext, "end") == 0)
             return END;
-        else if(strcmp(yytext, "read"))
+        else if(strcmp(yytext, "read") == 0)
             return READ;
-        else if(strcmp(yytext, "write"))
+        else if(strcmp(yytext, "write") == 0)
             return WRITE;
-        else if(strcmp(yytext, "for"))
+        else if(strcmp(yytext, "for") == 0)
             return FOR;
-        else if(strcmp(yytext, "to"))
+        else if(strcmp(yytext, "to") == 0)
             return TO;
-        else if(strcmp(yytext, "begin"))
+        else if(strcmp(yytext, "begin") == 0)
             return begin;
-        else if(strcmp(yytext, "const"))
+        else if(strcmp(yytext, "const") == 0)
             return CONST;
-        else if(strcmp(yytext, "do"))
+        else if(strcmp(yytext, "do") == 0)
             return DO;
-        else if(strcmp(yytext, "else"))
+        else if(strcmp(yytext, "else") == 0)
             return ELSE;
-        else if(strcmp(yytext, "if"))
+        else if(strcmp(yytext, "if") == 0)
             return IF;
-        else if(strcmp(yytext, "procedure"))
+        else if(strcmp(yytext, "procedure") == 0)
             return PROCEDURE;
-        else if(strcmp(yytext, "program"))
+        else if(strcmp(yytext, "program") == 0)
             return PROGRAM;
-        else if(strcmp(yytext, "then"))
+        else if(strcmp(yytext, "then") == 0)
             return THEN;
-        else if(strcmp(yytext, "var"))
+        else if(strcmp(yytext, "var") == 0)
             return VAR;
-        else if(strcmp(yytext, "while"))
+        else if(strcmp(yytext, "while") == 0)
             return WHILE;
-        else if(strcmp(yytext, "integer"))
+        else if(strcmp(yytext, "integer") == 0)
             return INTEGER;
-        else if(strcmp(yytext, "real"))
+        else if(strcmp(yytext, "real") == 0)
             return REAL;
 
     }
     else if(yyleng >= 14)
         yyerror("Erro lexico encontrado - Identificador muito grande");
     else{
-        printf("%s - IDENTIFIER\n", yytext);
+        printf(" [%s - IDENTIFIER]", yytext);
         return identifier;
     }
 }
