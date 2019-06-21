@@ -33,7 +33,7 @@ void yyerror(char *);
 %token FOR
 %token TO
 %token begin
-%token CONST // TA DANDO A PORRA DO PROBLEMA
+%token CONST
 %token DO
 %token ELSE
 %token IF
