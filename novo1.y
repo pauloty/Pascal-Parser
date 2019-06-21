@@ -7,7 +7,12 @@ void init();
 
 int yylex();
 void yyerror(char *);
+
+int nlinha = 1;
+
 %}
+
+%error-verbose
 
 /* Tipos que o analisador léxico pode retornar */
 
@@ -51,9 +56,12 @@ void yyerror(char *);
 //%nonassoc UMINUS
 //%nonassoc if
 //%nonassoc else
+
+%right THEN ELSE
 %%
 
 programa    : PROGRAM identifier ';' corpo '.'
+            | error ';'
             ;
 
 corpo   : dc begin comandos END
@@ -112,10 +120,10 @@ argumentos      : identifier mais_ident
 mais_ident      : ';' argumentos
                 | /* EMPTY */ 
                 ;
-
+/*
 pfalsa      : ELSE cmd
-            | /* EMPTY */ 
-            ;
+            | /* EMPTY 
+            ;*/
 
 comandos    : cmd ';' comandos 
             | /* EMPTY */ 
@@ -124,7 +132,8 @@ comandos    : cmd ';' comandos
 cmd     : READ '(' variaveis ')' 
         | WRITE '(' variaveis ')' 
         | WHILE '(' condicao ')' DO cmd
-        | IF condicao THEN cmd pfalsa
+        | IF condicao THEN cmd
+        | IF condicao THEN cmd ELSE cmd
         | identifier ":=" expressao
         | identifier lista_arg 
         | begin comandos END
@@ -137,8 +146,8 @@ relacao     : '='
             | "<>" 
             | ">=" 
             | "<=" 
-            | ">" 
-            | "<"
+            | '>' 
+            | '<'
             ;
 
 expressao   : termo outros_termos
@@ -181,7 +190,7 @@ numero      : ninteger
 void yyerror (char *s) 
 {
     //fprintf(stderr, "\nERROR, LINE %d: %s\n", yylineno, s); 
-    fprintf(stderr, "\n%s\n", s); 
+    fprintf(stderr, " // Linha %d // %s\n", nlinha, s); 
 } 
 
 int main (void) 

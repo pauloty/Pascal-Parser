@@ -10,19 +10,14 @@
 
 int yylex();
 void yyerror(char *);
-
 char **reserved_words;
 int check_id(char **);
 char *str_read(FILE *);
 int hash(char *);
-
-int nlinha = 1;
 int yywrap (void);
-
 void init();
-//void yyerror (char *s);
-//void check_id(char **, char *);
-//int yylex();
+
+extern int nlinha;
 
 %}
     /* Estado criado para comentários */
@@ -36,6 +31,9 @@ identifier                              {alpha}({alpha}|{digit})*
 ninteger                                {digit}+
 nreal                                   {digit}+\.{digit}+
 
+    /* Conta as linhas */
+%option   yylineno
+
 /* Regras*/
 %%
 
@@ -45,7 +43,7 @@ nreal                                   {digit}+\.{digit}+
 "{"                                     BEGIN(COMMENT);
 <COMMENT>"{"							{++contador_comment;}
 <COMMENT>[^}{\n]+                        /* não faz nada */
-<COMMENT>\n                             fprintf(stderr, "Erro encontrado - Comentario nao fechado");nlinha += 1;BEGIN(INITIAL);
+<COMMENT>\n                             yyerror("Erro encontrado - Comentario nao fechado");nlinha += 1;BEGIN(INITIAL);
 <COMMENT>"}"                            {
                                             if(contador_comment)
                                                --contador_comment; 
@@ -56,13 +54,11 @@ nreal                                   {digit}+\.{digit}+
 
     /* Par regex/ação */
 {ninteger}                              {
-                                            //fprintf( stderr, " [ninteger:%d]", yylval.ival = atoi(yytext) ); 
                                             printf(" [ninteger : %d]", yylval.ival = atoi(yytext) );
 					                        return ninteger;
                                         } 
 
 {nreal}                                 {
-                                            //fprintf( stderr, " [nreal:%d]", yylval.fval = atoi(yytext) ); 
                                             printf(" [nreal : %f]", yylval.fval = atoi(yytext) ); 
 					                        return nreal;
                                         } 
@@ -72,21 +68,23 @@ nreal                                   {digit}+\.{digit}+
                                             return check_id(reserved_words);
                                         }
 
-(=|:=|<=|>=|<>|>|<)                     {
-                                            //fprintf( stderr, " [%s:%s]",yytext, yytext); 
+(:=|<=|>=|<>)                           { 
                                             printf(" [%s : %s]",yytext, yytext); 
 					                        return *yytext;
                                         }
+(=|>|<)                                 { 
+                                            printf(" [%s : %s]",yytext, yytext); 
+					                        return yytext[0];
+                                        }
 
-[*/+\-,^.;:()\[\]]                      {
-                                            //fprintf( stderr, " [%s:%s]",yytext, yytext); 
+[*/+\-,^.;:()\[\]]                      { 
                                             printf(" [%s : %s]",yytext, yytext); 
 					                        return yytext[0];
                                         }
 
 {white_space}                           /* não faz nada */
 
-\n                                      {nlinha += 1;}
+\n                                      {nlinha += 1;printf("\n");}
 
 {alpha}@|({alpha}|{digit})+             {yyerror("Erro lexico encontrado - Identificador mal formado");}
 
