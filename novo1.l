@@ -31,9 +31,6 @@ identifier                              {alpha}({alpha}|{digit})*
 ninteger                                {digit}+
 nreal                                   {digit}+\.{digit}+
 
-    /* Conta as linhas */
-%option   yylineno
-
 /* Regras*/
 %%
 
@@ -51,7 +48,6 @@ nreal                                   {digit}+\.{digit}+
                                                 BEGIN(INITIAL);
                                         }
 
-
     /* Par regex/ação */
 {ninteger}                              {
                                             printf(" [ninteger : %d]", yylval.ival = atoi(yytext) );
@@ -63,21 +59,41 @@ nreal                                   {digit}+\.{digit}+
 					                        return nreal;
                                         } 
 
-
 {identifier}                            {
                                             return check_id(reserved_words);
                                         }
 
-(:=|<=|>=|<>)                           { 
-                                            printf(" [%s : %s]",yytext, yytext); 
-					                        return *yytext;
+":="                                    {
+                                            printf(" [ASSIGNMENT : %s]",yytext); 
+                                            return ASSIGNMENT;
                                         }
+
+"<="                                    {
+                                            printf(" [LE : %s]",yytext); 
+                                            return LE;
+                                        }
+
+">="                                    {
+                                            printf(" [GE : %s]",yytext); 
+                                            return GE;
+                                        }
+
+"<>"                                    {
+                                            printf(" [NOTEQUAL : %s]",yytext); 
+                                            return NOTEQUAL;
+                                        } 
+
+"*"                                     {
+                                            printf(" [STAR : %s]",yytext); 
+                                            return STAR;
+                                        } 
+
 (=|>|<)                                 { 
                                             printf(" [%s : %s]",yytext, yytext); 
 					                        return yytext[0];
                                         }
 
-[*/+\-,^.;:()\[\]]                      { 
+[+\-,^.;:()\[\]]                        { 
                                             printf(" [%s : %s]",yytext, yytext); 
 					                        return yytext[0];
                                         }
@@ -182,7 +198,7 @@ int check_id(char **reserved_words)
     else if(yyleng >= 14)
         yyerror("Erro lexico encontrado - Identificador muito grande");
     else{
-        printf(" [%s - IDENTIFIER]", yytext);
+        printf(" [IDENTIFIER - %s]", yytext);
         return identifier;
     }
 }

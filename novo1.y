@@ -4,15 +4,12 @@
 #include <stdio.h>
 
 void init();
-
 int yylex();
 void yyerror(char *);
 
 int nlinha = 1;
 
 %}
-
-%error-verbose
 
 /* Tipos que o analisador léxico pode retornar */
 
@@ -32,6 +29,11 @@ int nlinha = 1;
 %token <id> identifier;
 
 /* Tokens reservados */
+%token ASSIGNMENT
+%token LE
+%token GE
+%token NOTEQUAL
+%token STAR
 %token END
 %token READ
 %token WRITE
@@ -51,13 +53,8 @@ int nlinha = 1;
 %token REAL
 
 /* Definicoes adicionais */
-//%left '+' '-'
-//%left '*' '/'
-//%nonassoc UMINUS
-//%nonassoc if
-//%nonassoc else
-
 %right THEN ELSE
+
 %%
 
 programa    : PROGRAM identifier ';' corpo '.'
@@ -134,7 +131,7 @@ cmd     : READ '(' variaveis ')'
         | WHILE '(' condicao ')' DO cmd
         | IF condicao THEN cmd
         | IF condicao THEN cmd ELSE cmd
-        | identifier ":=" expressao
+        | identifier ASSIGNMENT expressao
         | identifier lista_arg 
         | begin comandos END
         ;
@@ -143,9 +140,9 @@ condicao    : expressao relacao expressao
             ;
 
 relacao     : '=' 
-            | "<>" 
-            | ">=" 
-            | "<=" 
+            | NOTEQUAL 
+            | GE 
+            | LE 
             | '>' 
             | '<'
             ;
@@ -173,7 +170,7 @@ mais_fatores    : op_mul fator mais_fatores
                 | /* EMPTY */ 
                 ;
 
-op_mul      : "*" 
+op_mul      : STAR 
             | "/"
             ;
 
@@ -189,7 +186,6 @@ numero      : ninteger
 %%
 void yyerror (char *s) 
 {
-    //fprintf(stderr, "\nERROR, LINE %d: %s\n", yylineno, s); 
     fprintf(stderr, " // Linha %d // %s\n", nlinha, s); 
 } 
 
