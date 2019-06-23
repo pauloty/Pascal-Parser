@@ -88,15 +88,81 @@ nreal                                   {digit}+\.{digit}+
                                             return STAR;
                                         } 
 
-(=|>|<)                                 { 
-                                            printf(" [%s : %s]",yytext, yytext); 
-					                        return yytext[0];
-                                        }
+"="                                     {
+                                            printf(" [EQUAL : %s]",yytext); 
+                                            return EQUAL;
+                                        } 
 
-[+\-,^.;:()\[\]]                        { 
-                                            printf(" [%s : %s]",yytext, yytext); 
-					                        return yytext[0];
-                                        }
+">"                                     {
+                                            printf(" [GREATER : %s]",yytext); 
+                                            return GREATER;
+                                        } 
+
+"<"                                     {
+                                            printf(" [LESS : %s]",yytext); 
+                                            return LESS;
+                                        } 
+
+"+"                                     {
+                                            printf(" [PLUS : %s]",yytext); 
+                                            return PLUS;
+                                        } 
+
+"-"                                     {
+                                            printf(" [MINUS : %s]",yytext); 
+                                            return MINUS;
+                                        } 
+
+"/"                                     {
+                                            printf(" [DIVIDE : %s]",yytext); 
+                                            return DIVIDE;
+                                        } 
+
+","                                     {
+                                            printf(" [COMMA : %s]",yytext); 
+                                            return COMMA;
+                                        } 
+
+"^"                                     {
+                                            printf(" [HIGH : %s]",yytext); 
+                                            return HIGH;
+                                        } 
+
+"."                                     {
+                                            printf(" [DOT : %s]",yytext); 
+                                            return DOT;
+                                        } 
+
+";"                                     {
+                                            printf(" [SEMICOLON : %s]",yytext); 
+                                            return SEMICOLON;
+                                        } 
+
+":"                                     {
+                                            printf(" [COLON : %s]",yytext); 
+                                            return COLON;
+                                        } 
+
+"("                                     {
+                                            printf(" [OPENCB : %s]",yytext); 
+                                            return OPENCB;
+                                        } 
+
+")"                                     {
+                                            printf(" [CLOSECB : %s]",yytext); 
+                                            return CLOSECB;
+                                        } 
+
+"["                                     {
+                                            printf(" [OPENSB : %s]",yytext); 
+                                            return OPENSB;
+                                        } 
+
+
+"]"                                     {
+                                            printf(" [CLOSESB : %s]",yytext); 
+                                            return CLOSESB;
+                                        } 
 
 {white_space}                           /* não faz nada */
 
